@@ -1,7 +1,7 @@
 <?php
 
 class ShelfDBTools {
-    const DBTABLE = 'warehouses';
+    const DBTABLE = 'shelves';
 
     private $mysqli;
 

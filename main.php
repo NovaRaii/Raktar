@@ -5,7 +5,7 @@ require_once('ShelfDBTools.php');
 require_once('ItemsDBTools.php');
 require_once('DBWarehouse.php');
 require_once('DBShelf.php');
-require_once('DBItem.php');
+require_once('DBItems.php');
 
 $csvtools = new CsvTools();
 $warehouseDbtools = new WarehouseDbTools();
@@ -20,3 +20,5 @@ $createShelfTable = $dbShelf->createTable();
 $createItemsTable = $dbItems->createTable();
 
 $truncateWarehouseTable = $csvtools->truncateWarehouseTable($warehouseDbtools);
+$truncateShelfTable = $csvtools->truncateShelfTable($shelfDbtools);
+$truncateItemsTable = $csvtools->truncateItemsTable($itemsDbtools);

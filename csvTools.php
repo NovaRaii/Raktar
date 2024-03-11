@@ -119,9 +119,25 @@ class CsvTools {
     }
     function truncateWarehouseTable($warehouseDbTool,$csvData){
         $warehouseDbTool->truncateWarehouse();
-        $cities = $this->getWarehouses($csvData);
-        foreach ($cities as $city){
-            $warehouseDbTool->createCity($city[0],$city[1]);
+        $warehouses = $this->getWarehouses($csvData);
+        foreach ($warehouses as $wearhouse){
+            $warehouseDbTool->createWarehouse($wearhouse);
+        }
+    }
+
+    function truncateShelfTable($shelfDbTool,$csvData){
+        $shelfDbTool->truncateShelf();
+        $shelves = $this->getShelves($csvData);
+        foreach ($shelves as $shelf){
+            $shelfDbTool->createWarehouse($shelf);
+        }
+    }
+
+    function truncateItemsTable($itemsDbTool,$csvData){
+        $itemsDbTool->truncateItems();
+        $items = $this->getItems($csvData);
+        foreach ($items as $item){
+            $itemsDbTool->createWarehouse($item);
         }
     }
 

@@ -1,7 +1,7 @@
 <?php
 
 class ItemsDBTools {
-    const DBTABLE = 'warehouses';
+    const DBTABLE = 'items';
 
     private $mysqli;
 
