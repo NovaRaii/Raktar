@@ -1,13 +1,17 @@
-﻿warehouse_name,shelf_id,product_name,quantity
-Apple Warehouse,A1,iPhone 13,1000
-Apple Warehouse,A2,iPad Pro,750
-Apple Warehouse,A3,MacBook Air,500
-Samsung Warehouse,S1,Galaxy S21,1200
-Samsung Warehouse,S2,Galaxy Tab S7,800
-Samsung Warehouse,S3,Odyssey G9 Monitor,300
-Xiaomi Warehouse,X1,Mi 11,1500
-Xiaomi Warehouse,X2,Redmi Note 10,1000
-Xiaomi Warehouse,X3,Mi Smart Band 6,1200
-Sony Warehouse,S1,Xperia 1 III,600
-Sony Warehouse,S2,PlayStation 5,900
-Sony Warehouse,S3,WH-1000XM4 Headphones,700
+warehouse_name,shelf_id,product_name,quantity
+Apple,A1,iPhone 13,1000
+Apple,A2,iPad Pro,750
+Apple,A3,MacBook Air,500
+Apple,A4,AirPods Pro,1200
+Samsung,S1,Galaxy S21,1200
+Samsung,S2,Galaxy Tab S7,800
+Samsung,S3,Odyssey G9 Monitor,300
+Samsung,S4,Galaxy Buds Pro,1000
+Xiaomi,X1,Mi 11,1500
+Xiaomi,X2,Redmi Note 10,1000
+Xiaomi,X3,Mi Smart Band 6,1200
+Xiaomi,X4,Mi True Wireless Earphones 2,800
+Sony,S1,Xperia 1 III,600
+Sony,S2,PlayStation 5,900
+Sony,S3,WH-1000XM4 Headphones,700
+Sony,S4,BRAVIA XR A80J 4K OLED TV,400
