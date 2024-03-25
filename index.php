@@ -1,38 +1,49 @@
 <?php
+
 require_once('AbstractPage.php');
 require_once('WarehousesDbTools.php');
+require_once('ShelvesDbTools.php');
+require_once('InventoryDbTools.php');
 
-// Initialize the WarehousesDbTools object
 $warehousesDbTool = new WarehousesDbTools();
+$shelvesDbTool = new ShelvesDbTools();
 
-// Handle form submission
-if ($_SERVER["REQUEST_METHOD"] == "POST" && isset($_POST["submit"])) {
-    // Retrieve the selected warehouse ID from the form
-    $selectedWarehouseId = $_POST["countyDropdown"];
-
-    // Retrieve the shelves and inventory items for the selected warehouse
-    // You need to implement these methods in your WarehousesDbTools class
-    $shelves = $warehousesDbTool->getShelvesForWarehouse($selectedWarehouseId);
-    $inventory = $warehousesDbTool->getInventoryForWarehouse($selectedWarehouseId);
-
-    // Display the shelves and inventory
-    echo "<h2>Shelves</h2>";
-    echo "<ul>";
-    foreach ($shelves as $shelf) {
-        echo "<li>Shelf ID: " . $shelf['id'] . ", Shelf Line: " . $shelf['shelf_line'] . "</li>";
-    }
-    echo "</ul>";
-
-    echo "<h2>Inventory</h2>";
-    echo "<ul>";
-    foreach ($inventory as $item) {
-        echo "<li>Item ID: " . $item['id'] . ", Item Name: " . $item['item_name'] . ", Quantity: " . $item['quantity'] . "</li>";
-    }
-    echo "</ul>";
-}
-
-// Display the HTML form and dropdown
 AbstractPage::insertHtmlHead();
 $warehouses = $warehousesDbTool->getAllWarehouses();
 AbstractPage::showDropDown($warehouses);
+
+if (isset($_POST["warehouseDropdown"])) 
+    {
+        $selectedWarehouseId = isset($_POST["warehouseDropdown"]) ? $_POST["warehouseDropdown"] : '';
+        $shelves = $shelvesDbTool->getShelvesByWarehouseId($selectedWarehouseId);
+        
+        
+        if (!empty($shelves)) {
+            $warehouseName = $shelves[0]['warehouse_name'];
+            echo '<h2 class="nev">' . (!empty($warehouseName) ? $warehouseName . ' Raktár:' : '') . '</h2>';
+            AbstractPage::showMainTable($shelves);
+        }
+    }
+
+
+if(isset($_POST['delete_shelf'])) {
+    $shelfIdToDelete = $_POST['shelf_id'];
+    $shelvesDbTool->deleteShelfById($shelfIdToDelete);
+    $shelves = $shelvesDbTool->getShelvesByWarehouseId($selectedWarehouseId);
+}
+
+if (isset($_POST['modify_items'])) {
+       
+    $modifyItemId = $_POST['modify_item_id'];
+    $itemToModify = $inventoryDbTool->getItemById($modifyItemId);
+    AbstractPage::showModifyItems($itemToModify, $modifyItemId);
+}
+if (isset($_POST['modify_item_submit'])) {
+    $modifyItemId = $_POST['modify_item_id'];
+    $modifiedItemName = $_POST['modified_item_name'];
+    $modifiedItemShelf = $_POST['modified_item_shelf'];
+    $inventoryDbTool->updateItem($modifyItemId, $modifiedItemName, $modifiedItemShelf);
+    $items = $inventoryDbTool->getItemsByShelfId($selectedShelfId);
+}
+
 ?>

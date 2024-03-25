@@ -4,7 +4,7 @@ class InventoryDbTools {
 
     private $mysqli;
 
-    function __construct($host = 'localhost', $user = 'root', $password = null, $db = 'registry_db')
+    function __construct($host = 'localhost', $user = 'root', $password = null, $db = 'electronics_db')
     {
         $this->mysqli = new mysqli($host, $user, $password, $db);
         if ($this->mysqli->connect_errno){
@@ -19,7 +19,7 @@ class InventoryDbTools {
 
     function createInventory($itemName,$Qty)
     {
-        $sql = "INSERT INTO " . self::DBTABLE . " (item_name,quantity) VALUES (?, ?)";
+        $sql = "INSERT INTO " . self::DBTABLE . " (item_name,quantity,min_quantity) VALUES (?, ?, 10)";
         $stmt = $this->mysqli->prepare($sql);
         $stmt->bind_param("si", $itemName, $Qty);
         $result = $stmt->execute();
@@ -36,5 +36,48 @@ class InventoryDbTools {
         return $result;
     }
 
+    function deleteInventory(){
+        $result = $this->mysqli->query("DROP TABLE " . self::DBTABLE);
+        return $result;
+    }
+
+    public function addItem($id, $item_name, $shelfId) {
+        $sql = "INSERT INTO " . self::DBTABLE . " (id, item_name, shelfId) VALUES (?, ?, ?)";
+        $stmt = $this->mysqli->prepare($sql);
+        $stmt->bind_param("ssi", $id, $item_name, $shelfId);
+        $result = $stmt->execute();
+ 
+        if (!$result) {
+            echo "Error adding product: " . $this->mysqli->error;
+            return false;
+        }
+ 
+        return true;
+    }
+
+    function updateItem($itemId, $itemName, $shelf_id) {
+        $sql = "UPDATE " . self::DBTABLE . " SET item_name = ?, shelf_id = ? WHERE id = ?";
+        $stmt = $this->mysqli->prepare($sql);
+        $stmt->bind_param("ssi", $itemId, $itemName, $shelf_id);
+        $result = $stmt->execute();
+
+        if (!$result) {
+            echo "Hiba történt a termék módosítása közben";
+            return false;
+        }
+
+        return true;
+    }
+
+    public function getItemById($itemId) {
+        $query = "SELECT * FROM " . self::DBTABLE . " WHERE id = ?";
+        $stmt = $this->mysqli->prepare($query);
+        $stmt->bind_param("i", $itemId);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        $item = $result->fetch_assoc();
+        $stmt->close();
+        return $item;
+    }
     
 }

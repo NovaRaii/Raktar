@@ -3,7 +3,7 @@ class WarehousesDbTools {
     const DBTABLE = 'warehouses';
     private $mysqli;
 
-    function __construct($host = 'localhost', $user = 'root', $password = null, $db = 'registry_db') {
+    function __construct($host = 'localhost', $user = 'root', $password = null, $db = 'electronics_db') {
         $this->mysqli = new mysqli($host, $user, $password, $db);
         if ($this->mysqli->connect_errno) {
             throw new Exception($this->mysqli->connect_errno);
@@ -31,6 +31,27 @@ class WarehousesDbTools {
     {
         $result = $this->mysqli->query("TRUNCATE TABLE " . self::DBTABLE);
         return $result;
+    }
+
+    function deleteWarehouses()
+    {
+        $result = $this->mysqli->query("DROP TABLE " . self::DBTABLE);
+        return $result;
+    }
+
+    function getAllWarehouses(){
+        $warehouses = [];
+
+        $sql = "SELECT * FROM warehouses";
+        $result = $this->mysqli->query($sql);
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $warehouses[] = $row;
+            }
+        }
+
+        return $warehouses;
     }
 
 }
