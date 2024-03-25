@@ -1,24 +1,45 @@
 <?php
+
+error_reporting(E_ALL);
+ini_set('display_errors', 1);
+
+require_once('AbstractPage.php');
 require_once('CsvTools.php');
-require_once('WarehouseDBTools.php');
-require_once('ShelfDBTools.php');
-require_once('ItemsDBTools.php');
-require_once('DBWarehouse.php');
-require_once('DBShelf.php');
-require_once('DBItems.php');
+require_once('WarehousesDbTools.php');
+require_once('InventoryDbTools.php');
+require_once('ShelvesDbTools.php');
+require_once('DBShelves.php');
+require_once('DBInventory.php');
+require_once('DBWarehouses.php');
 
 $csvtools = new CsvTools();
-$warehouseDbtools = new WarehouseDbTools();
-$shelfDbtools = new ShelfDBTools();
-$itemsDbtools = new ItemsDBTools();
-$dbWarehouse = new DBWarehouse();
-$dbShelf = new DBShelf();
-$dbItems = new DBItems();
+$warehousesDbTool = new WarehousesDbTools();
+$shelvesDbTool = new ShelvesDbTools();
+$inventoryDbTool = new InventoryDbTools();
+$dbWarehouses = new DBWarehouses();
+$dbInventory = new DBInventory();
+$dbShelves = new DBShelves();
+$csvData = $csvtools->getCsvData($csvtools::FILENAME);
 
-$createWarehouseTable = $dbWarehouse->createTable();
-$createShelfTable = $dbShelf->createTable();
-$createItemsTable = $dbItems->createTable();
+$createWarehousesTable = $dbWarehouses->createTable();
+$createShelvesTable = $dbShelves->createTable();
+$createInventoryTable = $dbInventory->createTable();
 
-$truncateWarehouseTable = $csvtools->truncateWarehouseTable($warehouseDbtools);
-$truncateShelfTable = $csvtools->truncateShelfTable($shelfDbtools);
-$truncateItemsTable = $csvtools->truncateItemsTable($itemsDbtools);
+
+$truncateWarehousesTable = $csvtools->truncateWarehousesTable($warehousesDbTool,$csvData);
+$truncateShelvesTable = $csvtools->truncateShelvesTable($shelvesDbTool,$csvData);
+$truncateInventoryTable = $csvtools->truncateInventoryTable($inventoryDbTool, $csvData);
+
+$getWarehouseId = $csvtools->getWarehouseId($csvData);
+$getShelves = $csvtools->getShelves($csvData);
+
+$updateShelves = $shelvesDbTool->updateShelves($getWarehouseId,$getShelves);
+
+
+
+
+
+
+
+
+
