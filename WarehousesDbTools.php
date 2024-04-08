@@ -1,0 +1,58 @@
+<?php
+class WarehousesDbTools {
+    const DBTABLE = 'warehouses';
+    private $mysqli;
+
+    function __construct($host = 'localhost', $user = 'root', $password = null, $db = 'electronics_db') {
+        $this->mysqli = new mysqli($host, $user, $password, $db);
+        if ($this->mysqli->connect_errno) {
+            throw new Exception($this->mysqli->connect_errno);
+        }
+    }
+
+    function __destruct() {
+        $this->mysqli->close();
+    }
+
+    function createWarehouses($warehouseId,$warehouse)
+    {
+        $sql = "INSERT INTO " . self::DBTABLE . " (id,name) VALUES (?, ?)";
+        $stmt = $this->mysqli->prepare($sql);
+        $stmt->bind_param("is", $warehouseId, $warehouse);
+        $result = $stmt->execute();
+        if (!$result) {
+            echo "Hiba történt a leltár beszúrása közben";
+            return false;
+        }
+        return true;
+    }
+
+    function truncateWarehouses()
+    {
+        $result = $this->mysqli->query("TRUNCATE TABLE " . self::DBTABLE);
+        return $result;
+    }
+
+    function deleteWarehouses()
+    {
+        $result = $this->mysqli->query("DROP TABLE " . self::DBTABLE);
+        return $result;
+    }
+
+    public function getAllWarehouses()
+    {
+        $warehouses = [];
+
+        $sql = "SELECT * FROM warehouses";
+        $result = $this->mysqli->query($sql);
+
+        if ($result->num_rows > 0) {
+            while ($row = $result->fetch_assoc()) {
+                $warehouses[] = $row;
+            }
+        }
+
+        return $warehouses;
+    }
+
+}
