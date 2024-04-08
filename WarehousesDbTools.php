@@ -39,7 +39,8 @@ class WarehousesDbTools {
         return $result;
     }
 
-    function getAllWarehouses(){
+    public function getAllWarehouses()
+    {
         $warehouses = [];
 
         $sql = "SELECT * FROM warehouses";

@@ -36,48 +36,46 @@ class InventoryDbTools {
         return $result;
     }
 
-    function deleteInventory(){
+    function deleteInventory()
+    {
         $result = $this->mysqli->query("DROP TABLE " . self::DBTABLE);
         return $result;
     }
 
-    public function addItem($id, $item_name, $shelfId) {
-        $sql = "INSERT INTO " . self::DBTABLE . " (id, item_name, shelfId) VALUES (?, ?, ?)";
-        $stmt = $this->mysqli->prepare($sql);
-        $stmt->bind_param("ssi", $id, $item_name, $shelfId);
-        $result = $stmt->execute();
- 
-        if (!$result) {
-            echo "Error adding product: " . $this->mysqli->error;
-            return false;
-        }
- 
-        return true;
-    }
-
-    function updateItem($itemId, $itemName, $shelf_id) {
-        $sql = "UPDATE " . self::DBTABLE . " SET item_name = ?, shelf_id = ? WHERE id = ?";
-        $stmt = $this->mysqli->prepare($sql);
-        $stmt->bind_param("ssi", $itemId, $itemName, $shelf_id);
-        $result = $stmt->execute();
-
-        if (!$result) {
-            echo "Hiba történt a termék módosítása közben";
-            return false;
-        }
-
-        return true;
-    }
-
-    public function getItemById($itemId) {
-        $query = "SELECT * FROM " . self::DBTABLE . " WHERE id = ?";
+    
+    public function getInventoryByWarehouseId($warehouseId) {
+        $query = "SELECT s.item_name, i.quantity 
+                  FROM shelves s
+                  INNER JOIN inventory i ON s.item_name = i.item_name
+                  WHERE s.warehouse_id = ?";
         $stmt = $this->mysqli->prepare($query);
-        $stmt->bind_param("i", $itemId);
+        $stmt->bind_param("i", $warehouseId);
         $stmt->execute();
         $result = $stmt->get_result();
-        $item = $result->fetch_assoc();
+    
+        $inventory = [];
+        while ($row = $result->fetch_assoc()) {
+            $inventory[$row['item_name']] = $row['quantity'];
+        }
+    
         $stmt->close();
-        return $item;
+        return $inventory;
     }
+
+    /*public function modifyInventory($itemQty, $shelfId)
+    {
+        $sql = "UPDATE " . self::DBTABLE . " SET quantity = ? WHERE id = ?";
+        $stmt = $this->mysqli->prepare($sql);
+        $stmt->bind_param("ii", $itemQty, $shelfId);
+        $result = $stmt->execute();
+        if (!$result) {
+            echo "Error updating shelf: " . $this->mysqli->error;
+            return false;
+        }
+        return true;
+    }*/
+    
+    
+    
     
 }

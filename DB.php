@@ -2,7 +2,7 @@
 class DB
 {
     protected $mysqli;
- 
+
     static function databaseExists()
     {
         $mysqli = mysqli_connect($host = 'localhost', $user = 'root', $password = null, 'mysql');
@@ -23,14 +23,14 @@ class DB
         $sql = "CREATE DATABASE electronics_db DEFAULT CHARACTER SET utf8 ;";
         $mysqli->query($sql);
     }
- 
+
     function deleteDatabase()
     {
         $result = $this->mysqli->query("DROP DATABASE electronics_db;");
         return $result;
     }
- 
- 
+
+
     function __construct($host = 'localhost', $user = 'root', $password = null, $db = 'electronics_db')
     {
         if (!self::databaseExists()) {

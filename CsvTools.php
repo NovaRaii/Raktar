@@ -45,15 +45,18 @@ class CsvTools {
         fclose($csvFile);
         return $lines;
     }
+
     function importCsv($tmpFilePath, $warehouseDbTool, $shelvesDbTool, $inventoryDbTool) {
         $csvData = $this->getCsvDataFromTmpFile($tmpFilePath);
- 
+
         if (empty($csvData)) {
             echo "Nem található adat a CSV fájlban.";
             return false;
         }
-        header("Refresh:0");
+        header("Refresh:0"); 
     }
+
+
     function getWarehouses($csvData)
     {
         if (empty($csvData)) {
@@ -168,6 +171,7 @@ class CsvTools {
             $inventoryDbTool->createInventory($items[0], $items[1]);
         }
     }
+
     function getCsvDataFromTmpFile($tmpFilePath) {
         $lines = [];
         $csvFile = fopen($tmpFilePath, 'r');
