@@ -1,63 +1,87 @@
 <?php
-
+ 
 require_once('AbstractPage.php');
 require_once('WarehousesDbTools.php');
 require_once('ShelvesDbTools.php');
 require_once('InventoryDbTools.php');
-
+ 
 $warehousesDbTool = new WarehousesDbTools();
 $shelvesDbTool = new ShelvesDbTools();
 $inventoryDbTool =  new InventoryDbTools();
-
+ 
 AbstractPage::insertHtmlHead();
+AbstractPage::showDatabaseManage();
 $warehouses = $warehousesDbTool->getAllWarehouses();
 AbstractPage::showDropDown($warehouses);
-AbstractPage::showAddItem();
+AbstractPage::showAddInventory();
+AbstractPage::showPdfExport();
+AbstractPage::showMail();
 
-if (isset($_POST["warehouseDropdown"])) {
-    $selectedWarehouseId = $_POST["warehouseDropdown"] ? $_POST["warehouseDropdown"] : '';
-    $shelves = $shelvesDbTool->getShelvesByWarehouseId($selectedWarehouseId);
-    $inventory = $inventoryDbTool->getInventoryByWarehouseId($selectedWarehouseId);
 
-    if (!empty($shelves)) {
-        $warehouseName = $shelves[0]['warehouse_name'];
-        echo '<h2 class="nev">' . (!empty($warehouseName) ? $warehouseName . ' Raktár:' : '') . '</h2>';
-        AbstractPage::showMainTable($shelves, $inventory);
+$selectedWarehouseId = null;
+ 
+if ($_SERVER["REQUEST_METHOD"] == "POST") {
+    if (isset($_POST["warehouseDropdown"])) {
+        $selectedWarehouseId = $_POST["warehouseDropdown"];
+        $shelves = $shelvesDbTool->getShelvesByWarehouseId($selectedWarehouseId);
+        $inventory = $inventoryDbTool->getInventoryByWarehouseId($selectedWarehouseId);
+
+        if (!empty($shelves)) {
+            $warehouseName = $shelves[0]['warehouse_name'];
+            echo '<h2 class="nev">' . (!empty($warehouseName) ? $warehouseName . ' Raktár:' : '') . '</h2>';
+            AbstractPage::showMainTable($shelves, $inventory);
+        }
     }
 }
 
-if(isset($_POST['delete_shelf'])) {
-    $shelfIdToDelete = $_POST['shelf_id'];
-    $shelvesDbTool->deleteShelfById($shelfIdToDelete);
-    $shelves = $shelvesDbTool->getShelvesByWarehouseId($selectedWarehouseId);
+if (isset($_POST['delete_shelf'])) {
+    if (isset($_POST['shelf_id'])) {
+        $shelfIdToDelete = $_POST['shelf_id'];
+        $shelvesDbTool->deleteShelfById($shelfIdToDelete);
+        if (isset($selectedWarehouseId)) {
+            $shelves = $shelvesDbTool->getShelvesByWarehouseId($selectedWarehouseId);
+        }
+    }
 }
+
 
 if (isset($_POST['modify_shelf'])) {
-       
-    $modifywarehouseId = $_POST['modify_warehouse_id'];
-    $shelfToModify = $shelvesDbTool->getShelfById($modifywarehouseId);
-    AbstractPage::showModifyShelf($shelfToModify, $modifywarehouseId);
-}
-
-if (isset($_POST['modify_shelf_submit'])) {
-    $modifyWarehouseId = $_POST['modify_warehouse_id'];
-    $modifiedShelfLine = $_POST['modified_shelf_line'];
-    $modifiedItemName = $_POST['modified_item_name'];
-    $shelvesDbTool->updateCity($modifyWarehouseId, $modifiedShelfLine, $modifiedItemName);
-    $shelves = $shelvesDbTool->getShelvesByWarehouseId($selectedWarehouseId);
-}
-
-if(isset($_POST['add_item'])) {
-    $newItemName = $_POST['new_item_name'];
-    $newShelfLine = $_POST['new_shelf_line'];
-    $warehouseId = $selectedWarehouseId;
-
-    if(!empty($newItemName) && !empty($newShelfLine) && !empty($warehouseId)) {
-        $shelvesDbTool->addItem($newItemName, $newShelfLine, $warehouseId);
-        $shelves = $shelvesDbTool->getShelvesByWarehouseId($warehouseId);
+    if (isset($_POST['modify_shelf_id'])) {
+        $modifyShelfId = $_POST['modify_shelf_id'];
+        $shelfToModify = $shelvesDbTool->getShelfById($modifyShelfId);
+        $inventory = $inventoryDbTool->getInventoryByWarehouseId($selectedWarehouseId);
+        AbstractPage::showModifyShelf($shelfToModify, $modifyShelfId, $inventory);
     }
-    else {
-        echo "Kérlek töltsd ki mindkét mezőt!";
+}
+if (isset($_POST['modify_shelf_submit'])) {
+    if (isset($_POST['modify_shelf_id'])) {
+        $modifyShelfId = $_POST['modify_shelf_id'];
+        $modifiedShelfLine = $_POST['modified_shelf_line'];
+        $modifiedShelfId = $_POST['modified_shelf_id'];
+        $modifiedItemName = $_POST['modified_shelf_itemName'];
+        $modifiedItemQuantity = $_POST['modified_item_qty'];      
+        $shelvesDbTool->modifyShelf($modifyShelfId, $modifiedShelfLine, $modifiedShelfId, $modifiedItemName);
+        if (isset($selectedWarehouseId)) {
+            $shelves = $shelvesDbTool->getShelvesByWarehouseId($selectedWarehouseId);
+            $inventory = $inventoryDbTool->getInventoryByWarehouseId($selectedWarehouseId); 
+        }
+    }
+}
+
+
+
+if (isset($_POST['add_inventory'])) {
+    $newItemName = $_POST['new_item_name'];
+    $newShelfName = $_POST['new_shelf_name'];
+    $newShelfId = $_POST['new_shelf_id'];
+    $newItemQuantity = $_POST['new_item_quantity'];
+    $warehouseId = $_POST['warehouse_id'];
+
+    if (!empty($newItemName) && !empty($newItemQuantity) && !empty($warehouseId)) {
+        $shelvesDbTool->addShelf($newItemName, $newShelfName, $newShelfId, $warehouseId);
+        $shelves = $shelvesDbTool->getShelvesByWarehouseId($warehouseId);
+    } else {
+        echo "Töltsd ki az összes mezőt!";
     }
 }
 

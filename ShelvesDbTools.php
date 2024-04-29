@@ -11,7 +11,6 @@ class ShelvesDbTools {
         if ($this->mysqli->connect_errno){
             throw new Exception($this->mysqli->connect_errno);
         }
-    
     }
 
     function __destruct()
@@ -64,19 +63,6 @@ class ShelvesDbTools {
         return true;
     } 
 
-    function deleteShelfById($shelfId)
-    {
-        $sql = "DELETE FROM " . self::DBTABLE . " WHERE id = ?";
-        $stmt = $this->mysqli->prepare($sql);
-        $stmt->bind_param("i", $shelfId);
-        $result = $stmt->execute();
-        if (!$result) {
-            echo "Hiba történt a polc törlése közben";
-            return false;
-        }
-        return true;
-    }
-
     private function findWarehouseId($shelf, $warehouseIds)
     {
         $shelfPrefix = substr($shelf[0], 0, 1);
@@ -128,29 +114,63 @@ class ShelvesDbTools {
         return $shelves;
     }
 
-    public function addItem($shelfLine, $warehouseId, $itemName) {
-        $sql = "INSERT INTO " . self::DBTABLE . " (shelf_line, warehouse_id, item_name) VALUES (?, ?, ?)";
+    public function deleteShelfById($shelfId)
+    {
+        $sql = "DELETE FROM " . self::DBTABLE . " WHERE id = ?";
         $stmt = $this->mysqli->prepare($sql);
-        $stmt->bind_param("ssi", $shelfLine, $warehouseId, $itemName);
+        $stmt->bind_param("i", $shelfId);
         $result = $stmt->execute();
- 
         if (!$result) {
-            echo "Error adding city: " . $this->mysqli->error;
+            echo "Error deleting shelf: " . $this->mysqli->error;
             return false;
         }
- 
         return true;
     }
 
-    public function getShelfById($shelfId) {
+    public function modifyShelf($shelfId, $shelfLine, $modifiedshelfId, $itemName)
+{
+    $sql = "UPDATE " . self::DBTABLE . " SET shelf_line = ?, item_name = ?, id = ? WHERE id = ?";
+    $stmt = $this->mysqli->prepare($sql);
+    $stmt->bind_param("ssii", $shelfLine, $itemName, $modifiedshelfId, $shelfId);
+    $result = $stmt->execute();
+    if (!$result) {
+        echo "Error updating shelf: " . $this->mysqli->error;
+        return false;
+    }
+    return true;
+}
+
+
+    public function addShelf($itemName, $shelf_line, $shelfId, $warehouseId)
+    {
+        $sql = "INSERT INTO " . self::DBTABLE . " (item_name, id, shelf_line, warehouse_id) VALUES (?, ?, ?, ?)";
+        $stmt = $this->mysqli->prepare($sql);
+        $stmt->bind_param("sisi", $itemName, $shelfId, $shelf_line, $warehouseId);
+        $result = $stmt->execute();
+        if (!$result) {
+            echo "Error adding shelf: " . $this->mysqli->error;
+            return false;
+        }
+        return true;
+    }
+
+    public function getShelfById($shelfId)
+    {
         $query = "SELECT * FROM " . self::DBTABLE . " WHERE id = ?";
         $stmt = $this->mysqli->prepare($query);
         $stmt->bind_param("i", $shelfId);
         $stmt->execute();
         $result = $stmt->get_result();
-        $shelves = $result->fetch_assoc();
+        $shelf = $result->fetch_assoc();
         $stmt->close();
-        return $shelves;
+        return $shelf;
+    }
+
+    public function getAll(): array
+    {
+        $query = "SELECT warehouses.name, shelves.shelf_line, shelves.id, shelves.item_name, inventory.quantity FROM shelves INNER JOIN inventory ON inventory.item_name = shelves.item_name INNER JOIN warehouses ON warehouses.id = shelves.warehouse_id  ORDER BY warehouses.name;";
+ 
+        return $this->mysqli->query($query)->fetch_all(MYSQLI_ASSOC);
     }
 
 }

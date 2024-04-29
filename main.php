@@ -8,9 +8,11 @@ require_once('CsvTools.php');
 require_once('DBShelves.php');
 require_once('DBInventory.php');
 require_once('DBWarehouses.php');
+require_once('DBUser.php');
 require_once('WarehousesDbTools.php');
 require_once('InventoryDbTools.php');
 require_once('ShelvesDbTools.php');
+require_once('UserDBTools.php');
 
 require_once('DB.php');
 $db = new DB();
@@ -20,6 +22,8 @@ $csvtools = new CsvTools();
 $warehousesDbTool = new WarehousesDbTools();
 $shelvesDbTool = new ShelvesDbTools();
 $inventoryDbTool = new InventoryDbTools();
+$UsersDbTool = new UserDBTools();
+$dbUsers = new DBUser();
 $dbWarehouses = new DBWarehouses();
 $dbInventory = new DBInventory();
 $dbShelves = new DBShelves();
@@ -53,9 +57,11 @@ if (isset($_POST['import-btn']) && isset($_FILES['input-file']['tmp_name'])) {
         $warehousesDbTool->truncateWarehouses();
         $shelvesDbTool->truncateShelves();
         $inventoryDbTool->truncateInventory();   
+        $UsersDbTool->truncateUsers();
         $dbWarehouses->createTable();
         $dbShelves->createTable();
         $dbInventory->createTable();
+        $dbUsers->createTable();
         
     }
     
@@ -63,6 +69,7 @@ if (isset($_POST['import-btn']) && isset($_FILES['input-file']['tmp_name'])) {
         $dbWarehouses->createTable();
         $dbShelves->createTable();
         $dbInventory->createTable();    
+        $dbUsers->createTable();
     
     }
     
@@ -70,6 +77,7 @@ if (isset($_POST['import-btn']) && isset($_FILES['input-file']['tmp_name'])) {
         $warehousesDbTool->deleteWarehouses();
         $shelvesDbTool->deleteShelves();
         $inventoryDbTool->deleteInventory();
+        $UsersDbTool->deleteUsers();
     }
 
     if(isset($_POST['create-database'])) {
@@ -97,10 +105,15 @@ if (isset($_POST['import-btn']) && isset($_FILES['input-file']['tmp_name'])) {
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="fontawesome/css/all.css" type="text/css">
     <link rel="stylesheet" href="css/styles.css">
-    <title>Document</title>
+    <title>Raktár Import</main></title>
 </head>
 <body>
-<button><a href="index.php"></a>Főoldal</button>
+<a href="index.php">
+    <button>Főoldal</button>
+</a>
+<a href="login.php">
+    <button>login</button>
+</a>
 <form method="post" enctype="multipart/form-data">
     <input type="file" name="input-file">
     <button type="submit" name="import-btn">Import</button>

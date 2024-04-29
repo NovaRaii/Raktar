@@ -1,20 +1,20 @@
 <?php
 
-require_once 'WarehousesInterface.php';
+require_once 'UserInterface.php';
 require_once 'DB.php';
 
 
-class DBWarehouses extends DB implements WarehousesInterface
+class DBUser extends DB implements UserInterface
 {
 
     public function createTable(){
-        $query = 'CREATE TABLE IF NOT EXISTS warehouses (id int NOT NULL, name varchar(50) NOT NULL)';
+        $query = 'CREATE TABLE IF NOT EXISTS users (id int AUTO_INCREMENT PRIMARY KEY, name varchar(50) NOT NULL, email varchar(25) not null unique, password varchar(50) not null, token varchar(100), token_valid_until datetime)';
         return $this->mysqli->query($query);
     }
 
     public function create(array $data): ?int
     {
-        $sql = 'INSERT INTO warehouses (%s) VALUES (%s)';
+        $sql = 'INSERT INTO users (%s) VALUES (%s)';
         $fields = '';
         $values = '';
         foreach ($data as $field => $value) {
@@ -37,3 +37,4 @@ class DBWarehouses extends DB implements WarehousesInterface
     }
 
 }
+
