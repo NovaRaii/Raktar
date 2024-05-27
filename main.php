@@ -108,11 +108,8 @@ if (isset($_POST['import-btn']) && isset($_FILES['input-file']['tmp_name'])) {
     <title>Raktár Import</main></title>
 </head>
 <body>
-<a href="index.php">
-    <button>Főoldal</button>
-</a>
 <a href="login.php">
-    <button>login</button>
+    <button>Login</button>
 </a>
 <form method="post" enctype="multipart/form-data">
     <input type="file" name="input-file">

@@ -129,18 +129,19 @@
             <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="css/loginstyle.css">
+            <link rel="stylesheet" href="css/loginstyles.css">
             <title>Bejelentkezés és Regisztráció</title>
             </head>
             <body>
              
             <div class="container">
             <h2>Bejelentkezés</h2>
-            <form action="#">
-            <input type="email" placeholder="Email" required><br>
-            <input type="password" placeholder="Jelszó" required><br>
-            <input type="submit" value="Bejelentkezés">
+            <form method="post" action="' . htmlspecialchars($_SERVER["PHP_SELF"]) . '">
+            <input type="email" placeholder="Email" name="loginEmail" required><br>
+            <input type="password" placeholder="Jelszó" name="loginPassword" required><br>
+            <input type="submit" name="btn-login" id="btn-login" value="Bejelentkezés">
             </form>
+            
             <div class="options">
             <a href="registration.php">Regisztráció</a>
             </div>
@@ -156,7 +157,7 @@
             <head>
             <meta charset="UTF-8">
             <meta name="viewport" content="width=device-width, initial-scale=1.0">
-            <link rel="stylesheet" href="css/loginstyle.css">
+            <link rel="stylesheet" href="css/loginstyles.css">
             <title>Bejelentkezés és Regisztráció</title>
             </head>
             <body>
@@ -167,6 +168,10 @@
             <input type="email" id="email" name="email" placeholder="Email" required><br>
             <input type="password" id="password" name="password" placeholder="Jelszó" required><br>
             <input type="password" id="confirm_password" name="confirm_password" placeholder="Jelszó újra" required><br>
+            <select id="privilegeDropdown" name="privilegeDropdown">
+            <option value="Admin">Admin</option>
+            <option value="User">User</option><br>
+            </select>
             <input type="submit" id="add_user" name="add_user" value="Regisztráció">
             </form>
             <div class="options">
@@ -176,5 +181,42 @@
             </body>
             </html>
             ';
+        }
+
+        static function showValidationPage() {
+            echo '
+            <!DOCTYPE html>
+            <html lang="en">
+            <head>
+                <meta charset="UTF-8">
+                <meta http-equiv="X-UA-Compatible" content="IE=edge">
+                <meta name="viewport" content="width=device-width, initial-scale=1.0">
+                <link rel="stylesheet" href="css/loginstyle.css">
+                <title>Validálás</title>
+            </head>
+            <body>
+            <form method="post" action="login.php">
+            <button id="validation" name="validation" title="Validation">Login</button>
+            </form>
+            </body>
+            </html>';
+        }
+
+        static function showUserTable(array $shelves, array $inventory)
+        {  
+            echo '<table>
+                    <tr>
+                        <th>id</th><th>Polcok</th><th>Termékek</th><th>Mennyiség</th>
+                    </tr>';
+            foreach ($shelves as $shelf) {
+                echo '<tr>';
+                echo '<td>' . $shelf['id'] . '</td>';
+                echo '<td>' . $shelf['shelf_line'] . '</td>';
+                echo '<td>' . $shelf['item_name'] . '</td>';
+                $quantity = isset($inventory[$shelf['item_name']]) ? $inventory[$shelf['item_name']] : 'N/A';
+                echo '<td>' . $quantity . '</td>';
+                echo '</tr>';
+            }
+            echo '</table>';
         }
     }

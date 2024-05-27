@@ -10,18 +10,22 @@ require_once("UserDBTools.php");
 $mail = new PHPMailer(true);
 $UsersDbTool = new UserDBTools();
 
+
 if (isset($_POST['add_user'])) {
+    $privilege = $_POST['privilegeDropdown'];
     $username = $_POST['username'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $confirm_password = $_POST['confirm_password'];
-
+    
+    
+    
     if($password != $confirm_password) {
         echo'Nem egyezik a két jelszó';
     }
     else {
-    $result = $UsersDbTool->createUsers($username, $email, $password);
-
+    $result = $UsersDbTool->createUsers($username, $email, $password, $privilege);
+    $token = $UsersDbTool->getUserByEmail($email);
     try {
 
     $mail->isSMTP();                                            
@@ -38,7 +42,7 @@ if (isset($_POST['add_user'])) {
     //Content
     $mail->isHTML(true);                                  //Set email format to HTML
     $mail->Subject = 'Email megerosites';
-    $mail->Body    = 'Itt a link a megerősítéshez: <a href="http://localhost:8081/Raktar/login.php">Megerosites</a>';
+    $mail->Body    = 'Itt a link a megerősítéshez: <a href="http://localhost:8081/Raktar/login.php?token='.$token.'">Megerosites</a>';
     $mail->AltBody = 'Igen';
 
     $mail->send();

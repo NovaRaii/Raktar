@@ -8,7 +8,7 @@ class DBUser extends DB implements UserInterface
 {
 
     public function createTable(){
-        $query = 'CREATE TABLE IF NOT EXISTS users (id int AUTO_INCREMENT PRIMARY KEY, name varchar(50) NOT NULL, email varchar(25) not null unique, password varchar(50) not null, token varchar(100), token_valid_until datetime)';
+        $query = 'CREATE TABLE IF NOT EXISTS users (id int AUTO_INCREMENT PRIMARY KEY, name varchar(50) NOT NULL, email varchar(25) not null unique, password varchar(200) not null, token varchar(100), token_valid_until datetime, created_at datetime, is_active tinyint default false, privilege varchar(10))';
         return $this->mysqli->query($query);
     }
 
